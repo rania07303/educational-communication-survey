@@ -1,82 +1,3 @@
-/**
- * ÙƒÙˆØ¯ Google Apps Script â€” Ø§Ø³ØªØ¨ÙŠØ§Ù† Ø¹ÙˆØ§Ø¦Ù‚ Ø§Ù„ØªÙˆØ§ØµÙ„ Ø§Ù„ØªØ±Ø¨ÙˆÙŠ
- * ------------------------------------------------------
- * Ø®Ø·ÙˆØ§Øª Ø§Ù„ØªØ«Ø¨ÙŠØª:
- * 1) Ø£Ù†Ø´Ø¦ÙŠ Ø¬Ø¯ÙˆÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø¬Ø¯ÙŠØ¯ ÙÙŠ Google Sheets (sheets.google.com > Ø¬Ø¯ÙˆÙ„ Ø¨ÙŠØ§Ù†Ø§Øª ÙØ§Ø±Øº).
- * 2) Ù…Ù† Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©: Ø§Ù„Ø¥Ø¶Ø§ÙØ§Øª (Extensions) > Apps Script.
- * 3) Ø§Ø­Ø°ÙÙŠ Ø§Ù„ÙƒÙˆØ¯ Ø§Ù„Ù…ÙˆØ¬ÙˆØ¯ØŒ ÙˆØ§Ù„ØµÙ‚ÙŠ Ù‡Ø°Ø§ Ø§Ù„ÙƒÙˆØ¯ ÙƒØ§Ù…Ù„Ø§Ù‹.
- * 4) Ø§Ø¶ØºØ·ÙŠ Ø¹Ù„Ù‰ Ø£ÙŠÙ‚ÙˆÙ†Ø© Ø§Ù„Ø­ÙØ¸ (ðŸ’¾).
- * 5) Ø§Ø¶ØºØ·ÙŠ Ø¹Ù„Ù‰ "Ù†Ø´Ø±" (Deploy) > "Ù†Ø´Ø± Ø¬Ø¯ÙŠØ¯" (New deployment).
- *    - Ù†ÙˆØ¹ Ø§Ù„Ù†Ø´Ø± (Select type): ØªØ·Ø¨ÙŠÙ‚ ÙˆÙŠØ¨ (Web app)
- *    - Ø§Ù„ØªÙ†ÙÙŠØ° Ø¨Ø§Ø³Ù… (Execute as): Ø£Ù†Ø§ (Me)
- *    - Ù…Ù† ÙŠÙ…ÙƒÙ†Ù‡ Ø§Ù„ÙˆØµÙˆÙ„ (Who has access): Ø£ÙŠ Ù…Ø³ØªØ®Ø¯Ù… (Anyone)
- * 6) Ø§Ø¶ØºØ·ÙŠ "Ù†Ø´Ø±" (Deploy)ØŒ Ø«Ù… Ø§Ù…Ù†Ø­ÙŠ Ø§Ù„Ø£Ø°ÙˆÙ†Ø§Øª Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø© (Authorize access).
- * 7) Ø§Ù†Ø³Ø®ÙŠ "Ø±Ø§Ø¨Ø· ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„ÙˆÙŠØ¨" (Web app URL) â€” ÙŠÙ†ØªÙ‡ÙŠ Ø¨Ù€ /exec
- * 😎 Ø£Ø±Ø³Ù„ÙŠ Ù‡Ø°Ø§ Ø§Ù„Ø±Ø§Ø¨Ø· Ù„ÙŠ (Ø£Ùˆ Ø§Ù„ØµÙ‚ÙŠÙ‡ ÙÙŠ Ù…ÙƒØ§Ù† SCRIPT_URL Ø¯Ø§Ø®Ù„ Ù…Ù„ÙØ§Øª HTML) Ù„Ø£Ø±Ø¨Ø· Ø§Ù„Ø§Ø³ØªÙ…Ø§Ø±Ø© Ø¨Ù‡.
- *
- * Ù…Ù„Ø§Ø­Ø¸Ø©: Ø£ÙŠ Ø±Ø§Ø¨Ø· Ø¨ Google Sheet Ù†ÙØ³Ù‡ (ÙˆÙ„ÙŠØ³ Ø§Ù„ÙÙˆØ±Ù…) Ù‡Ùˆ Ø§Ù„Ù…ÙƒØ§Ù† Ø§Ù„Ø°ÙŠ Ø³ØªØ´Ø§Ù‡Ø¯ÙŠÙ† ÙÙŠÙ‡
- * ÙƒÙ„ Ø¥Ø¬Ø§Ø¨Ø© ÙƒØ³Ø·Ø± Ø¬Ø¯ÙŠØ¯ ØªÙ„Ù‚Ø§Ø¦ÙŠÙ‹Ø§ ÙÙŠ ÙˆØ±Ù‚Ø© Ø¨Ø§Ø³Ù… "Responses".
- */
-
-const SHEET_NAME = "Responses";
-
-function doPost(e) {
-  try {
-    const sheet = getOrCreateSheet();
-    const data = JSON.parse(e.postData.contents);
-
-    if (sheet.getLastRow() === 0) {
-      const headers = Object.keys(data);
-      sheet.appendRow(headers);
-    }
-
-    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    const row = headers.map(h => (data[h] !== undefined ? data[h] : ""));
-    sheet.appendRow(row);
-
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "error", message: err.message }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doGet(e) {
-  const sheet = getOrCreateSheet();
-  const lastRow = sheet.getLastRow();
-
-  if (lastRow < 2) {
-    return ContentService
-      .createTextOutput(JSON.stringify([]))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const rows = data.slice(1).map(row => {
-    const obj = {};
-    headers.forEach((h, i) => { obj[h] = row[i]; });
-    return obj;
-  });
-
-  const output = ContentService
-    .createTextOutput(JSON.stringify(rows))
-    .setMimeType(ContentService.MimeType.JSON);
-
-  return output;
-}
-
-function getOrCreateSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-  }
-  return sheet;
-}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -181,4 +102,486 @@ function getOrCreateSheet() {
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-shrink
+    flex-shrink:0;
+  }
+  .section-title h2{
+    font-family:'Amiri',serif;
+    font-size:20px;
+    color:var(--teal-deep);
+    margin:0;
+  }
+  .section-desc{
+    color:var(--ink-soft);
+    font-size:13.5px;
+    margin:0 0 20px 44px;
+  }
+  label.field-label{
+    display:block;
+    font-weight:700;
+    font-size:14.5px;
+    margin-bottom:10px;
+    color:var(--ink);
+  }
+  .field{margin-bottom:22px;}
+  .field:last-child{margin-bottom:0;}
+  select, input[type=text], textarea{
+    width:100%;
+    padding:11px 14px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    font-family:'Tajawal',sans-serif;
+    font-size:14.5px;
+    background:#fdfcfa;
+    color:var(--ink);
+  }
+  select:focus, input:focus, textarea:focus{
+    outline:none;
+    border-color:var(--teal);
+  }
+  textarea{min-height:90px; resize:vertical;}
+  .radio-row{
+    display:flex;
+    gap:6px;
+    flex-wrap:nowrap;
+  }
+  .radio-row label{
+    flex:1;
+    text-align:center;
+    font-size:11.5px;
+    padding:9px 4px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:.15s;
+    user-select:none;
+  }
+  .radio-row input{position:absolute; opacity:0; pointer-events:none;}
+  .radio-row label:hover{border-color:var(--amber);}
+  .radio-row input:checked + label,
+  .radio-row label.checked{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+    font-weight:700;
+  }
+  .radio-row-wrap{position:relative;}
+  .item-question{
+    font-size:14.5px;
+    margin-bottom:10px;
+    color:var(--ink);
+  }
+  .item-block{
+    padding:16px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .item-block:last-child{border-bottom:none; padding-bottom:0;}
+  .item-block:first-child{padding-top:0;}
+  .scale-labels{
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    color:#9aa8a5;
+    margin-top:6px;
+    padding:0 2px;
+  }
+  .required{color:var(--danger); margin-right:3px;}
+  button.submit-btn{
+    width:100%;
+    background:var(--teal-deep);
+    color:#fff;
+    border:none;
+    padding:16px;
+    border-radius:10px;
+    font-family:'Tajawal',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  button.submit-btn:hover{background:var(--teal);}
+  button.submit-btn:disabled{opacity:.6; cursor:not-allowed;}
+  .foot-note{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    margin-top:14px;
+  }
+  .success-card{
+    text-align:center;
+    padding:50px 30px;
+  }
+  .success-card .check{
+    width:60px;height:60px;
+    background:var(--teal-light);
+    color:var(--teal-deep);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 18px;
+    font-size:28px;
+  }
+  .success-card h2{
+    font-family:'Amiri',serif;
+    color:var(--teal-deep);
+    margin:0 0 10px;
+  }
+  .success-card p{color:var(--ink-soft); font-size:14.5px;}
+  .error-msg{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:6px;
+    display:none;
+  }
+  .progress-outer{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 18px;
+  }
+  .progress-track{
+    height:5px;
+    background:var(--teal-light);
+    border-radius:5px;
+    overflow:hidden;
+    margin-top:-2px;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--amber);
+    width:0%;
+    transition:width .3s ease;
+  }
+  .result-item{
+    margin-bottom:18px;
+  }
+  .result-item:last-child{margin-bottom:0;}
+  .result-q{
+    font-size:13.5px;
+    margin-bottom:7px;
+    color:var(--ink);
+  }
+  .result-bar-track{
+    background:var(--teal-light);
+    border-radius:6px;
+    height:20px;
+    overflow:hidden;
+    position:relative;
+  }
+  .result-bar-fill{
+    background:linear-gradient(90deg,var(--teal),var(--teal-deep));
+    height:100%;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding-inline-start:8px;
+  }
+  .result-bar-fill span{
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+  }
+  .demo-pill-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .demo-pill{
+    background:var(--amber-light);
+    color:#7a5321;
+    font-size:12px;
+    font-weight:700;
+    padding:6px 12px;
+    border-radius:16px;
+  }
+  .open-answer{
+    background:var(--teal-light);
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:13px;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .empty-note{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    padding:20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">استبيان علمي ميداني</div>
+  <h1>عوائق التواصل التربوي وسبل معالجتها</h1>
+  <p>التواصل التربوي ليس مجرد نقل معلومة من المعلم إلى المتعلم، بل هو جسر يتحدد بمدى فعاليته نجاح العملية التعليمية بأكملها. يسعى هذا الاستبيان إلى استقصاء تجربتكم الميدانية الفعلية في التعامل مع عوائق هذا التواصل، بعيدًا عن الإجابات الجاهزة أو المتوقعة. نرجو التمهل عند كل عبارة واستحضار مواقف واقعية عشتموها داخل القسم قبل الاختيار، فإجاباتكم الصادقة هي ما يمنح هذا البحث قيمته العلمية. جميع الإجابات سرّية وتُستخدم لأغراض البحث العلمي فقط.</p>
+</header>
+
+<div class="progress-outer">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="wrap" id="formWrap">
+
+  <form id="surveyForm">
+
+    <!-- Section 0: بيانات عامة -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">١</span><h2>بيانات عامة</h2></div>
+      <p class="section-desc">معلومات مختصرة لتصنيف الإجابات فقط.</p>
+
+      <div class="field">
+        <label class="field-label">الجنس</label>
+        <div class="radio-row-wrap">
+          <div class="radio-row" data-name="gender">
+            <input type="radio" name="gender" id="g1" value="ذكر"><label for="g1">ذكر</label>
+            <input type="radio" name="gender" id="g2" value="أنثى"><label for="g2">أنثى</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">سنوات الخبرة في التدريس</label>
+        <select name="experience" id="experience">
+          <option value="">اختر...</option>
+          <option value="1-2 سنة (متربص)">1-2 سنة (متربص)</option>
+          <option value="3-5 سنوات">3-5 سنوات</option>
+          <option value="6-10 سنوات">6-10 سنوات</option>
+          <option value="11-15 سنة">11-15 سنة</option>
+          <option value="أكثر من 15 سنة">أكثر من 15 سنة</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">الطور التعليمي</label>
+        <select name="stage" id="stage">
+          <option value="متوسط" selected>متوسط</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section 1: عوائق متعلقة بالمعلم -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">٢</span><h2>عوائق متعلقة بالمعلم</h2></div>
+      <p class="section-desc">استحضر ممارساتك التدريسية اليومية: هل تتعرف فعلاً في هذه العبارات، أم أنها تصف زملاء آخرين؟ لا توجد إجابة صحيحة أو خاطئة.</p>
+      <div id="sectionMعلم"></div>
+    </div>
+
+    <!-- Section 2: عوائق متعلقة بالمتعلم -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">٣</span><h2>عوائق متعلقة بالمتعلم</h2></div>
+      <p class="section-desc">استحضر ممارساتك المدرسية اليومية.</p>
+      <div id="sectionMتعلم"></div>
+    </div>
+
+    <!-- Section 3: عوائق البيئة والإدارة المدرسية -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">٤</span><h2>عوائق البيئة والإدارة المدرسية</h2></div>
+      <p class="section-desc">قارن بين ما تعيشه فعلاً في المتوسطة التي تعمل فيها وما تعتقد أنه "الوضع الطبيعي" في مدارس أخرى، قبل أن تحدد إجابتك.</p>
+      <div id="sectionBiaa"></div>
+    </div>
+
+    <!-- Section 4: عوائق تكنولوجية ومادية -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">٥</span><h2>عوائق تكنولوجية ومادية</h2></div>
+      <p class="section-desc">لا تقيّم الوسائل المتوفرة نظريًا، بل مدى استخدامك الفعلي لها.</p>
+      <div id="sectionTech"></div>
+    </div>
+
+    <!-- Section 5: سبل المعالجة -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">٦</span><h2>سبل معالجة عوائق التواصل التربوي</h2></div>
+      <p class="section-desc">تخيّل تطبيق كل إجراء في قسمك تحديدًا: هل سيُحدث فرقًا حقيقيًا، أم أنه حل نظري جذاب فقط؟</p>
+      <div id="sectionSolutions"></div>
+    </div>
+
+    <!-- Section 6: سؤال مفتوح -->
+    <div class="card">
+      <div class="section-title"><span class="section-num">٧</span><h2>ملاحظات واقتراحات إضافية</h2></div>
+      <div class="field">
+        <label class="field-label">في رأيك، ما أهم إجراء يمكن أن يُحسّن التواصل التربوي مع تلاميذك؟ <span style="font-weight:400;color:var(--ink-soft);">(اختياري)</span></label>
+        <textarea name="openSuggestion" id="openSuggestion" placeholder="اكتب إجابتك هنا..."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <button type="submit" class="submit-btn" id="submitBtn">إرسال الاستبيان</button>
+      <div class="foot-note">إجاباتك تُحفظ بشكل مجهول ولا تُستخدم إلا لأغراض هذا البحث.</div>
+    </div>
+
+  </form>
+
+  <div class="card success-card" id="successCard" style="display:none;">
+    <div class="check">✓</div>
+    <h2>شكرًا لمشاركتكم</h2>
+    <p>تم تسجيل إجاباتكم بنجاح. مساهمتكم تُثري هذا العمل حول عوائق التواصل التربوي وسبل معالجتها.</p>
+  </div>
+
+</div>
+
+<script>
+const SCALE = [
+  {v:5, label:"موافق بشدة"},
+  {v:4, label:"موافق"},
+  {v:3, label:"محايد"},
+  {v:2, label:"غير موافق"},
+  {v:1, label:"غير موافق بشدة"}
+];
+
+const sections = {
+  sectionMعلم: {
+    prefix: "معلم",
+    items: [
+      "يجد بعض المعلمين صعوبة في تبسيط المحتوى العلمي بما يناسب مستوى المتعلمين.",
+      "يميل بعض المعلمين إلى أسلوب تواصل تسلطي يحد من تفاعل المتعلمين.",
+      "ضعف المهارات اللغوية أو التعبيرية لدى بعض المعلمين يؤثر على وضوح الرسالة التربوية.",
+      "قلة استخدام أساليب التواصل غير اللفظي (تعابير الوجه، الإيماءات) لتعزيز الفهم.",
+      "انشغال المعلم بإنهاء البرنامج الدراسي يقلل من وقت التفاعل والحوار مع المتعلمين."
+    ]
+  },
+  sectionMتعلم: {
+    prefix: "متعلم",
+    items: [
+      "يتردد بعض المتعلمين في طرح الأسئلة أو التعبير عن آرائهم خوفًا من التقييم السلبي.",
+      "ضعف الدافعية لدى بعض المتعلمين يقلل من تفاعلهم مع الرسائل التربوية.",
+      "الفروق الفردية بين المتعلمين (المعرفية والنفسية) تعيق التواصل الفعّال داخل القسم.",
+      "اختلاف اللغة أو اللهجة بين المعلم والمتعلم يسبب سوء فهم أحيانًا."
+    ]
+  },
+  sectionBiaa: {
+    prefix: "بيئة",
+    items: [
+      "اكتظاظ الأقسام يصعّب التواصل الفردي بين المعلم وكل متعلم.",
+      "ضعف التنسيق بين الإدارة المدرسية والمعلمين يؤثر سلبًا على مناخ التواصل.",
+      "غياب فضاءات مناسبة للحوار والتوجيه خارج الحصص الدراسية.",
+      "ضغط الجدول الزمني والحصص يحد من فرص التواصل التربوي الفعّال.",
+      "ضعف إشراك أولياء التلاميذ في متابعة التواصل التربوي داخل المؤسسة."
+    ]
+  },
+  sectionTech: {
+    prefix: "تقني",
+    items: [
+      "نقص الوسائل التعليمية والتكنولوجية يحد من تنويع أساليب التواصل.",
+      "ضعف تكوين المعلمين في استخدام الوسائط الرقمية في التواصل التربوي.",
+      "الاعتماد شبه الكلي على الطريقة التلقينية يقلل من فرص التفاعل."
+    ]
+  },
+  sectionSolutions: {
+    prefix: "حل",
+    items: [
+      "تكوين المعلمين دوريًا في مهارات التواصل التربوي والإنصات الفعّال.",
+      "تقليص عدد المتعلمين في القسم الواحد لتحسين التفاعل الفردي.",
+      "تفعيل التواصل التشاركي بين المعلم والمتعلم وأولياء الأمور.",
+      "توفير وسائل تعليمية وتقنية حديثة تدعم التفاعل داخل القسم.",
+      "تنويع أساليب التقويم لتشجيع المتعلمين على التعبير دون خوف.",
+      "تعزيز التنسيق بين الإدارة التربوية والمعلمين حول قضايا التواصل."
+    ]
+  }
+};
+
+function buildScaleRow(name){
+  let html = `<div class="radio-row-wrap"><div class="radio-row" data-name="${name}">`;
+  SCALE.forEach((s,i)=>{
+    html += `<input type="radio" name="${name}" id="${name}_${s.v}" value="${s.v}"><label for="${name}_${s.v}">${s.label}</label>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+Object.entries(sections).forEach(([containerId, sec])=>{
+  const container = document.getElementById(containerId);
+  sec.items.forEach((text, idx)=>{
+    const name = `${sec.prefix}_${idx+1}`;
+    const block = document.createElement('div');
+    block.className = 'item-block';
+    block.innerHTML = `
+      <div class="item-question"><span class="required">*</span>${text}</div>
+      ${buildScaleRow(name)}
+    `;
+    container.appendChild(block);
+  });
+});
+
+// visual checked state sync (for label styling on click, since :checked+label works but ensure works with keyboard too)
+document.addEventListener('change', (e)=>{
+  if(e.target.type === 'radio'){
+    const row = e.target.closest('.radio-row');
+    if(row){
+      row.querySelectorAll('label').forEach(l=>l.classList.remove('checked'));
+      const lbl = row.querySelector(`label[for="${e.target.id}"]`);
+      if(lbl) lbl.classList.add('checked');
+    }
+    updateProgress();
+  }
+});
+
+function updateProgress(){
+  const allRadioGroups = new Set();
+  document.querySelectorAll('.radio-row').forEach(r=>allRadioGroups.add(r.dataset.name));
+  let answered = 0;
+  allRadioGroups.forEach(name=>{
+    if(document.querySelector(`input[name="${name}"]:checked`)) answered++;
+  });
+  const pct = Math.round((answered / allRadioGroups.size) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ⚠️ ضعي هنا رابط تطبيق الويب الذي حصلتِ عليه من Google Apps Script (ينتهي بـ /exec)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkx9RTyoDYPiA2BykPXJt8mbbn7dnPK0j3VyKD0jQFuUjHjI5noWa9sPlPEfmYnZSd/exec";
+
+document.getElementById('surveyForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+
+  // Validate all scale questions answered
+  const allNames = new Set();
+  document.querySelectorAll('.radio-row[data-name]').forEach(r=>{
+    if(r.dataset.name !== 'gender') allNames.add(r.dataset.name);
+  });
+  let missing = false;
+  allNames.forEach(name=>{
+    if(!document.querySelector(`input[name="${name}"]:checked`)) missing = true;
+  });
+
+  if(missing){
+    alert('يرجى الإجابة على جميع عبارات المقياس قبل الإرسال.');
+    return;
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'جارٍ الإرسال...';
+
+  const formData = new FormData(e.target);
+  const responseObj = {};
+  formData.forEach((value, key)=>{ responseObj[key] = value; });
+  responseObj.submittedAt = new Date().toISOString();
+
+  try{
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(responseObj)
+    });
+
+    document.getElementById('surveyForm').style.display = 'none';
+    document.getElementById('successCard').style.display = 'block';
+    document.getElementById('progressFill').style.width = '100%';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(err){
+    console.error('Submit error:', err);
+    alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'إرسال الاستبيان';
+  }
+});
+
+updateProgress();
+
+</script>
+
+</body>
+</html>
