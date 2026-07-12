@@ -90,6 +90,24 @@
     padding-inline-start:8px;
   }
   .result-bar-fill span{color:#fff;font-size:11px;font-weight:700;}
+  .breakdown-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:8px;
+  }
+  .breakdown-chip{
+    font-size:11px;
+    padding:4px 9px;
+    border-radius:12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .chip-5{background:#0F4C4C; color:#fff;}
+  .chip-4{background:#3d8080; color:#fff;}
+  .chip-3{background:#e6efee; color:#22302E;}
+  .chip-2{background:#f0c9a0; color:#5a3c1a;}
+  .chip-1{background:#C98A3E; color:#fff;}
   .demo-pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
   .demo-pill{
     background:var(--amber-light);
@@ -265,18 +283,32 @@ async function loadResults(){
     card.className = 'card';
     let html = `<div class="section-title"><span class="dot"></span><h2>${sec.title}</h2></div>`;
 
+    const SCALE_LABELS = {5:"موافق بشدة", 4:"موافق", 3:"محايد", 2:"غير موافق", 1:"غير موافق بشدة"};
+
     const computed = sec.items.map((text, idx)=>{
       const name = `${sec.prefix}_${idx+1}`;
       let sum = 0, count = 0;
+      const valueCounts = {5:0, 4:0, 3:0, 2:0, 1:0};
       responses.forEach(r=>{
-        if(r[name]){ sum += parseInt(r[name],10); count++; }
+        if(r[name]){
+          const v = parseInt(r[name],10);
+          sum += v; count++;
+          if(valueCounts[v] !== undefined) valueCounts[v]++;
+        }
       });
       const avg = count > 0 ? (sum/count) : 0;
-      return {text, avg};
+      return {text, avg, valueCounts, count};
     });
 
-    computed.forEach(({text, avg})=>{
+    computed.forEach(({text, avg, valueCounts, count})=>{
       const pct = (avg/5)*100;
+      let breakdownHtml = '<div class="breakdown-row">';
+      [5,4,3,2,1].forEach(v=>{
+        const optPct = count > 0 ? Math.round((valueCounts[v]/count)*100) : 0;
+        breakdownHtml += `<span class="breakdown-chip chip-${v}">${SCALE_LABELS[v]}: ${optPct}%</span>`;
+      });
+      breakdownHtml += '</div>';
+
       html += `
         <div class="result-item">
           <div class="result-q">${text}</div>
@@ -285,6 +317,7 @@ async function loadResults(){
               <span>${pct.toFixed(0)}%</span>
             </div>
           </div>
+          ${breakdownHtml}
         </div>
       `;
     });
