@@ -317,7 +317,7 @@
 <header>
   <div class="eyebrow">استبيان علمي ميداني</div>
   <h1>عوائق التواصل التربوي وسبل معالجتها</h1>
-  <p>التواصل التربوي ليس مجرد نقل معلومة من المعلم إلى المتعلم، بل هو جسر يتحدد بمدى فعاليته نجاح العملية التعليمية بأكملها. يسعى هذا الاستبيان إلى استقصاء تجربتكم الميدانية الفعلية في التعامل مع عوائق هذا التواصل، بعيدًا عن الإجابات الجاهزة أو المتوقعة. نرجو التمهل عند كل عبارة واستحضار مواقف واقعية عشتموها داخل القسم قبل الاختيار، فإجاباتكم الصادقة هي ما يمنح هذا البحث قيمته العلمية. جميع الإجابات سرّية وتُستخدم لأغراض البحث العلمي فقط.</p>
+  <p>التواصل التربوي ليس مجرد نقل معلومة من المعلم إلى المتعلم، بل هو جسر يتحدد بمدى فعاليته نجاح العملية التعليمية بأكملها. يسعى هذا الاستبيان إلى استقصاء تجربتكم الميدانية الفعلية في التعامل مع عوائق هذا التواصل، بعيدًا عن الإجابات الجاهزة أو المتوقعة. نرجو التمهل عند كل عبارة واستحضار مواقف واقعية عشتموها داخل القسم قبل الاختيار، فإجاباتكم الصادقة هي ما يمنح هذا التقرير قيمته العلمية. جميع الإجابات سرّية وتُستخدم من أجل إعداد تقرير التربص.</p>
 </header>
 
 <div class="progress-outer">
@@ -391,25 +391,18 @@
       <div id="sectionTech"></div>
     </div>
 
-    <!-- Section 5: سبل المعالجة -->
-    <div class="card">
-      <div class="section-title"><span class="section-num">٦</span><h2>سبل معالجة عوائق التواصل التربوي</h2></div>
-      <p class="section-desc">تخيّل تطبيق كل إجراء في قسمك تحديدًا: هل سيُحدث فرقًا حقيقيًا، أم أنه حل نظري جذاب فقط؟</p>
-      <div id="sectionSolutions"></div>
-    </div>
-
     <!-- Section 6: سؤال مفتوح -->
     <div class="card">
-      <div class="section-title"><span class="section-num">٧</span><h2>ملاحظات واقتراحات إضافية</h2></div>
+      <div class="section-title"><span class="section-num">٦</span><h2>ملاحظات واقتراحات</h2></div>
       <div class="field">
-        <label class="field-label">في رأيك، ما أهم إجراء يمكن أن يُحسّن التواصل التربوي مع تلاميذك؟ <span style="font-weight:400;color:var(--ink-soft);">(اختياري)</span></label>
-        <textarea name="openSuggestion" id="openSuggestion" placeholder="اكتب إجابتك هنا..."></textarea>
+        <label class="field-label">في رأيك، ما أهم إجراء يمكن أن يُحسّن التواصل التربوي مع تلاميذك؟ <span class="required">*</span></label>
+        <textarea name="openSuggestion" id="openSuggestion" placeholder="اكتب إجابتك هنا..." required></textarea>
       </div>
     </div>
 
     <div class="card">
       <button type="submit" class="submit-btn" id="submitBtn">إرسال الاستبيان</button>
-      <div class="foot-note">إجاباتك تُحفظ بشكل مجهول ولا تُستخدم إلا لأغراض هذا البحث.</div>
+      <div class="foot-note">إجاباتك تُحفظ بشكل مجهول ولا تُستخدم إلا لأغراض هذا التقرير.</div>
     </div>
 
   </form>
@@ -468,17 +461,6 @@ const sections = {
       "ضعف تكوين المعلمين في استخدام الوسائط الرقمية في التواصل التربوي.",
       "الاعتماد شبه الكلي على الطريقة التلقينية يقلل من فرص التفاعل."
     ]
-  },
-  sectionSolutions: {
-    prefix: "حل",
-    items: [
-      "تكوين المعلمين دوريًا في مهارات التواصل التربوي والإنصات الفعّال.",
-      "تقليص عدد المتعلمين في القسم الواحد لتحسين التفاعل الفردي.",
-      "تفعيل التواصل التشاركي بين المعلم والمتعلم وأولياء الأمور.",
-      "توفير وسائل تعليمية وتقنية حديثة تدعم التفاعل داخل القسم.",
-      "تنويع أساليب التقويم لتشجيع المتعلمين على التعبير دون خوف.",
-      "تعزيز التنسيق بين الإدارة التربوية والمعلمين حول قضايا التواصل."
-    ]
   }
 };
 
@@ -535,6 +517,15 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbS2NyQ0dFGK-24J6vP
 document.getElementById('surveyForm').addEventListener('submit', async function(e){
   e.preventDefault();
 
+  // Validate open suggestion field (now mandatory)
+  const openInput = document.getElementById('openSuggestion');
+  if(!openInput.value.trim()){
+    alert('يرجى كتابة ملاحظاتك واقتراحاتك قبل الإرسال.');
+    openInput.focus();
+    openInput.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
   // Validate all scale questions answered
   const allNames = new Set();
   document.querySelectorAll('.radio-row[data-name]').forEach(r=>{
@@ -570,18 +561,4 @@ document.getElementById('surveyForm').addEventListener('submit', async function(
     document.getElementById('surveyForm').style.display = 'none';
     document.getElementById('successCard').style.display = 'block';
     document.getElementById('progressFill').style.width = '100%';
-    window.scrollTo({top:0, behavior:'smooth'});
-  }catch(err){
-    console.error('Submit error:', err);
-    alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.');
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'إرسال الاستبيان';
-  }
-});
-
-updateProgress();
-
-</script>
-
-</body>
-</html>
+    window.scrollTo
