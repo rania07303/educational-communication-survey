@@ -124,7 +124,7 @@
   }
   .field{margin-bottom:22px;}
   .field:last-child{margin-bottom:0;}
-  select, input[type=text], textarea{
+  select, input[type=text], input[type=email], textarea{
     width:100%;
     padding:11px 14px;
     border:1.5px solid var(--line);
@@ -334,6 +334,12 @@
       <p class="section-desc">معلومات مختصرة لتصنيف الإجابات فقط.</p>
 
       <div class="field">
+        <label class="field-label">البريد الإلكتروني <span class="required">*</span></label>
+        <input type="email" name="email" id="email" placeholder="example@gmail.com" required>
+        <div class="error-msg" id="emailError" style="display:none;">يجب إدخال بريد إلكتروني صحيح.</div>
+      </div>
+
+      <div class="field">
         <label class="field-label">الجنس</label>
         <div class="radio-row-wrap">
           <div class="radio-row" data-name="gender">
@@ -505,7 +511,6 @@ Object.entries(sections).forEach(([containerId, sec])=>{
   });
 });
 
-// visual checked state sync (for label styling on click, since :checked+label works but ensure works with keyboard too)
 document.addEventListener('change', (e)=>{
   if(e.target.type === 'radio'){
     const row = e.target.closest('.radio-row');
@@ -529,13 +534,23 @@ function updateProgress(){
   document.getElementById('progressFill').style.width = pct + '%';
 }
 
-// ⚠️ ضعي هنا رابط تطبيق الويب الذي حصلتِ عليه من Google Apps Script (ينتهي بـ /exec)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkx9RTyoDYPiA2BykPXJt8mbbn7dnPK0j3VyKD0jQFuUjHjI5noWa9sPlPEfmYnZSd/exec";
 
 document.getElementById('surveyForm').addEventListener('submit', async function(e){
   e.preventDefault();
 
-  // Validate all scale questions answered
+  const emailInput = document.getElementById('email');
+  const emailError = document.getElementById('emailError');
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailInput.value.trim() || !emailPattern.test(emailInput.value.trim())){
+    emailError.style.display = 'block';
+    emailInput.focus();
+    emailInput.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  } else {
+    emailError.style.display = 'none';
+  }
+
   const allNames = new Set();
   document.querySelectorAll('.radio-row[data-name]').forEach(r=>{
     if(r.dataset.name !== 'gender') allNames.add(r.dataset.name);
@@ -584,4 +599,4 @@ updateProgress();
 </script>
 
 </body>
-</html>
+  </html>
