@@ -396,7 +396,7 @@
       <div class="section-title"><span class="section-num">٦</span><h2>ملاحظات واقتراحات</h2></div>
       <div class="field">
         <label class="field-label">في رأيك، ما أهم إجراء يمكن أن يُحسّن التواصل التربوي مع تلاميذك؟ <span class="required">*</span></label>
-        <textarea name="openSuggestion" id="openSuggestion" placeholder="اكتب إجابتك هنا..." required></textarea>
+        <textarea name="openSuggestion" id="openSuggestion" placeholder="اكتب إجابتك هنا..."></textarea>
       </div>
     </div>
 
@@ -520,7 +520,7 @@ document.getElementById('surveyForm').addEventListener('submit', async function(
   // Validate open suggestion field (now mandatory)
   const openInput = document.getElementById('openSuggestion');
   if(!openInput.value.trim()){
-    alert('يرجى كتابة ملاحظاتك واقتراحاتك قبل الإرسال.');
+    alert('من فضلك أملأ الحقل أو اكتب اقتراحًا.');
     openInput.focus();
     openInput.scrollIntoView({behavior:'smooth', block:'center'});
     return;
