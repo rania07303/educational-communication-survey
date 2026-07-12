@@ -561,4 +561,18 @@ document.getElementById('surveyForm').addEventListener('submit', async function(
     document.getElementById('surveyForm').style.display = 'none';
     document.getElementById('successCard').style.display = 'block';
     document.getElementById('progressFill').style.width = '100%';
-    window.scrollTo
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(err){
+    console.error('Submit error:', err);
+    alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'إرسال الاستبيان';
+  }
+});
+
+updateProgress();
+
+</script>
+
+</body>
+</html>
